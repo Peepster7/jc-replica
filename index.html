@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JuicyChat APK Interface</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0f0b1e] text-white font-sans">
+
+    <!-- Top Navigation / Stats Bar -->
+    <div class="flex justify-between items-center p-4 bg-[#18112d] border-b border-purple-900/40">
+        <span class="text-pink-400 font-bold">$ 26.1k</span>
+        <div class="flex space-x-3">
+            <button onclick="switchTab('chat')" class="bg-purple-900/50 px-3 py-1 rounded-full text-xs text-purple-300">Chat</button>
+            <button onclick="switchTab('create')" class="bg-purple-900/50 px-3 py-1 rounded-full text-xs text-purple-300">Create</button>
+        </div>
+    </div>
+
+    <!-- TAB 1: Chat & Generation Interface -->
+    <div id="chat-tab" class="p-4 flex flex-col h-[75vh] justify-between">
+        <!-- Character Display Box -->
+        <div class="relative rounded-xl overflow-hidden border border-purple-500/30 shadow-lg mb-4">
+            <img id="generated-output" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=500&auto=format&fit=crop&q=60" class="w-full h-56 object-cover">
+        </div>
+
+        <!-- Chat Dialogue Bubble Box -->
+        <div class="bg-[#1f1538]/80 backdrop-blur p-4 rounded-xl border border-purple-500/20 text-sm text-gray-200 overflow-y-auto max-h-36">
+            <p id="chat-text">"During the current vacation period, authority over Gosha Academy is temporarily transferred to you..."</p>
+        </div>
+
+        <!-- Bottom Action Bar (Mask & Gallery Tools) -->
+        <div class="mt-4 bg-[#18112d] p-3 rounded-2xl border border-purple-900/50 flex items-center justify-between">
+            <div class="flex space-x-2">
+                <!-- Image Generation Button -->
+                <button onclick="triggerImageGen()" class="p-2 bg-purple-900/40 rounded-xl text-pink-400">🖼️</button>
+                <!-- Mask / GIF Tool Button -->
+                <button onclick="triggerMaskGen()" class="p-2 bg-purple-900/40 rounded-xl text-pink-400">✏️</button>
+            </div>
+            <input type="text" id="user-prompt" placeholder="Enter to send text..." class="bg-transparent text-sm w-full mx-3 focus:outline-none text-white placeholder-gray-500">
+            <button onclick="sendChatMessage()" class="bg-gradient-to-r from-pink-500 to-purple-600 px-4 py-2 rounded-xl text-xs font-bold">Send</button>
+        </div>
+    </div>
+
+    <!-- TAB 2: Character / Figure Creation Form (Hidden by default) -->
+    <div id="create-tab" class="p-4 hidden overflow-y-auto h-[80vh]">
+        <h2 class="text-pink-400 font-bold mb-4 text-lg">Figure Customization</h2>
+        <div class="space-y-4 text-sm">
+            <div>
+                <label class="text-gray-400 block mb-1">Figure Name</label>
+                <input type="text" id="fig-name" placeholder="Give your figure a name" class="w-full bg-[#18112d] border border-purple-900/50 p-3 rounded-xl text-white">
+            </div>
+            <div>
+                <label class="text-gray-400 block mb-1">Appearance</label>
+                <textarea id="fig-appearance" placeholder="sharp jawline, athletic build..." class="w-full bg-[#18112d] border border-purple-900/50 p-3 rounded-xl text-white h-20"></textarea>
+            </div>
+            <button onclick="saveFigure()" class="w-full bg-gradient-to-r from-pink-500 to-purple-600 py-3 rounded-xl font-bold">Generate Now →</button>
+        </div>
+    </div>
+
+    <script>
+        const HF_SPACE_URL = "https://peepster7-my-unfiltered-chat-backend.hf.space";
+
+        /**
+         * @param {string} tab
+         */
+        function switchTab(tab) {
+            const chatTab = document.getElementById('chat-tab');
+            const createTab = document.getElementById('create-tab');
+            if(tab === 'chat') {
+                chatTab.classList.remove('hidden');
+                createTab.classList.add('hidden');
+            } else {
+                chatTab.classList.add('hidden');
+                createTab.classList.remove('hidden');
+            }
+        }
+
+        async function triggerImageGen() {
+            const prompt = document.getElementById('user-prompt').value || "anime style portrait";
+            alert("Sending request to your Hugging Face GPU backend...");
+            
+            try {
+                const response = await fetch(`${HF_SPACE_URL}/gradio_api/call/generate_ai_image`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ data: [prompt] })
+                });
+                const result = await response.json();
+                console.log("Job queued:", result);
+                alert("Generation triggered successfully in the cloud!");
+            } catch (err) {
+                console.error(err);
+                alert("Error connecting to backend.");
+            }
+        }
+
+        function triggerMaskGen() {
+            alert("Opening Scribble Mask workspace for GIF generation...");
+        }
+
+        function saveFigure() {
+            const name = document.getElementById('fig-name').value;
+            alert(`Figure "${name}" configuration saved! Ready to render.`);
+        }
+    </script>
+</body>
+</html>
