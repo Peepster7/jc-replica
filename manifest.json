@@ -1,8 +1,16 @@
 {
   "name": "JuicyChat Replica",
   "short_name": "JuicyChat",
-  "start_url": "/index.html",
+  "description": "An unfiltered personal AI assistant and image generation app",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#0f0b1e",
-  "theme_color": "#18112d"
+  "theme_color": "#18112d",
+  "icons": [
+    {
+      "src": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=512&h=512&fit=crop",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
 }
